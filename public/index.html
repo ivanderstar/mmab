@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Make me a billionaire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,500;0,700;1,500&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ======================================================
+   НАСТРОЙКИ — меняются только в объекте CONFIG ниже (в <script>)
+   ====================================================== */
+:root{
+  --paper:#E9EEE3; --paper-2:#DCE4D4; --ink:#1B2A22; --ink-soft:#4A5D51;
+  --engrave:#1F4D3A; --seal:#A87A2C; --line:#B9C7B4; --field:#F6F8F2;
+  --serif:"EB Garamond", Georgia, "Times New Roman", serif;
+  --sans:"Manrope", system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1C16; --paper-2:#152720; --ink:#E4EBDF; --ink-soft:#9DB2A3;
+    --engrave:#8FC4A6; --seal:#D4A657; --line:#2B4337; --field:#18291F;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1C16; --paper-2:#152720; --ink:#E4EBDF; --ink-soft:#9DB2A3;
+  --engrave:#8FC4A6; --seal:#D4A657; --line:#2B4337; --field:#18291F;
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--seal);outline-offset:3px;border-radius:4px}
+.wrap{max-width:760px;margin:0 auto;padding:20px 20px 64px}
+
+/* top bar */
+.top{display:flex;justify-content:flex-end;align-items:center;gap:8px}
+.top label{font-size:14px;color:var(--ink-soft)}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+
+/* hero */
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(44px,10vw,96px);line-height:.95;letter-spacing:-.02em;margin:40px 0 18px;color:var(--engrave)}
+.sub{font-size:18px;max-width:34em;color:var(--ink-soft);margin:0 0 20px}
+.story{font-family:var(--serif);font-style:italic;font-size:22px;line-height:1.45;max-width:30em;margin:0 0 40px;padding-inline-start:18px;border-inline-start:3px solid var(--seal)}
+
+/* the cheque */
+.cheque{position:relative;background:var(--paper-2);border:1px solid var(--line);border-radius:6px;padding:28px 28px 24px;
+  background-image:
+    repeating-radial-gradient(circle at 100% 0, transparent 0 9px, color-mix(in srgb,var(--engrave) 7%,transparent) 9px 10px),
+    repeating-linear-gradient(115deg, transparent 0 14px, color-mix(in srgb,var(--engrave) 5%,transparent) 14px 15px);
+  box-shadow: inset 0 0 0 6px var(--paper-2), inset 0 0 0 7px var(--line);}
+.cheque-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+.bankname{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--engrave)}
+.seal{width:64px;height:64px;flex:none;border-radius:50%;border:2px solid var(--seal);color:var(--seal);display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:13px;text-align:center;line-height:1.1;transform:rotate(-12deg)}
+.row{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--ink-soft);padding-bottom:6px;margin-bottom:22px;flex-wrap:wrap}
+.row .k{font-size:14px;color:var(--ink-soft);white-space:nowrap}
+.row .v{font-family:var(--serif);font-size:28px;font-weight:500}
+.amount-box{display:flex;align-items:center;gap:10px;background:var(--field);border:1px solid var(--line);border-radius:8px;padding:6px 12px;flex:1;min-width:200px}
+.amount-box span{font-family:var(--serif);font-size:28px;color:var(--ink-soft)}
+.amount-box input{border:0;background:transparent;font-family:var(--serif);font-size:32px;font-weight:700;color:var(--ink);width:100%;min-width:0}
+.amount-box input:focus{outline:none}
+.amount-box:focus-within{outline:2px solid var(--seal);outline-offset:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:15px;font-weight:600;color:var(--engrave);background:transparent;border:1px solid var(--engrave);border-radius:999px;padding:7px 14px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--engrave);color:var(--paper)}
+.micr{margin-top:24px;font-family:"OCR A Std","Courier New",monospace;font-size:13px;letter-spacing:.2em;color:var(--ink-soft)}
+
+/* progress */
+.progress{margin:40px 0 8px}
+.bar{height:10px;border-radius:5px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--seal);min-width:3px}
+.progress p{display:flex;justify-content:space-between;gap:12px;margin:8px 0 0;font-size:14px;color:var(--ink-soft);flex-wrap:wrap}
+
+/* methods */
+h2{font-family:var(--serif);font-weight:700;font-size:34px;line-height:1.1;margin:48px 0 8px;color:var(--engrave)}
+h3{font-size:15px;font-weight:700;margin:28px 0 10px;color:var(--ink-soft)}
+.methods{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.m{display:flex;align-items:center;justify-content:space-between;gap:10px;text-decoration:none;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:14px 16px;font-weight:600;cursor:pointer;font:inherit;font-weight:600;color:var(--ink);text-align:start;width:100%}
+.m:hover{border-color:var(--engrave)}
+.m small{font-weight:400;color:var(--ink-soft);font-size:13px}
+.m.off{opacity:.55}
+.addr{grid-column:1/-1;display:flex;gap:10px;align-items:center;background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.addr b{white-space:nowrap}
+.addr code{flex:1;overflow-x:auto;white-space:nowrap;font-size:13px;color:var(--ink-soft)}
+.addr button{font:inherit;font-size:14px;font-weight:600;background:var(--engrave);color:var(--paper);border:0;border-radius:8px;padding:7px 12px;cursor:pointer;white-space:nowrap}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+.toast.show{opacity:1}
+footer{margin-top:56px;font-size:13px;color:var(--ink-soft);max-width:44em}
+[dir="rtl"] .seal{transform:rotate(12deg)}
+@media (max-width:520px){.cheque{padding:22px 18px}.seal{width:52px;height:52px;font-size:11px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <label for="lang" data-i="lang">Language</label>
+    <select id="lang"></select>
+  </div>
+
+  <h1 data-i="title">Make me a billionaire</h1>
+  <p class="sub" data-i="sub"></p>
+  <p class="story" data-i="story"></p>
+
+  <section class="cheque" aria-labelledby="payto">
+    <div class="cheque-head">
+      <div class="bankname" id="bankname"></div>
+      <div class="seal" aria-hidden="true">1 000<br>000 000</div>
+    </div>
+    <div class="row"><span class="k" id="payto" data-i="payTo"></span><span class="v" id="owner"></span></div>
+    <div class="row" style="border:0;margin-bottom:12px">
+      <label class="k" for="amt" data-i="amount"></label>
+      <div class="amount-box"><span id="cur"></span><input id="amt" inputmode="decimal" autocomplete="off"></div>
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="micr" aria-hidden="true">⑈ 000000001 ⑆ 1000000000 ⑈</div>
+  </section>
+
+  <div class="progress" id="progress">
+    <div class="bar"><i id="barfill"></i></div>
+    <p><span><span data-i="raised"></span>: <b id="raised"></b></span><span><span data-i="goal"></span>: <b id="goal"></b></span></p>
+  </div>
+
+  <h2 data-i="choose"></h2>
+  <div id="groups"></div>
+
+  <footer data-i="note"></footer>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ==========================================================
+   CONFIG — впишите сюда свои данные и ссылки на оплату.
+   Пустые url/value: при demo:true показываются бледными,
+   при demo:false скрываются.
+   ========================================================== */
+const CONFIG = {
+  owner: "Your Name",
+  goalUSD: 1000000000,
+  raisedUSD: 0,            // обновляйте вручную
+  demo: true,
+  methods: [
+    // Карты, Apple Pay, Google Pay — Stripe Payment Link с «покупатель сам выбирает сумму»
+    { group:"cards", name:"Card · Apple Pay · Google Pay", url:"" },
+    // PayPal.me — сумма подставляется автоматически
+    { group:"platforms", name:"PayPal", url:"", paypalme:true },   // напр. "https://paypal.me/yourname"
+    { group:"platforms", name:"Buy Me a Coffee", url:"" },
+    { group:"platforms", name:"Ko-fi", url:"" },
+    { group:"platforms", name:"Patreon", url:"" },
+    { group:"bank", name:"Revolut", url:"" },                     // https://revolut.me/yourname
+    { group:"bank", name:"Wise", url:"" },
+    { group:"bank", name:"IBAN", value:"", copy:true },            // ваш IBAN + имя получателя
+    { group:"crypto", name:"Bitcoin (BTC)", value:"", copy:true },
+    { group:"crypto", name:"Ethereum (ETH)", value:"", copy:true },
+    { group:"crypto", name:"USDT (TRC-20)", value:"", copy:true },
+    { group:"crypto", name:"Solana (SOL)", value:"", copy:true }
+  ]
+};
+
+const T = {
+en:{n:"English",story:"I thought it would be fun if someone got rich just like that — for fun, by tossing a site like this onto the internet like into a black box. So come on, make me a billionaire. It’s so absurd it might just work.",title:"Make me a billionaire",sub:"Every payment brings me closer to nine zeros. Send any amount you like — it’s voluntary, and it’s genuinely appreciated.",payTo:"Pay to the order of",amount:"Amount",goal:"Goal",raised:"Raised so far",choose:"Choose how to pay",cards:"Card, Apple Pay, Google Pay",platforms:"Payment platforms",bank:"Bank transfer",crypto:"Crypto",copy:"Copy",copied:"Copied",soon:"This method isn’t connected yet",bank_n:"The Bank of Optimism",lang:"Language",note:"Payments are voluntary gifts and can’t be refunded. You receive nothing in return except my sincere gratitude. This is not an investment or a charity."},
+ru:{n:"Русский",story:"Я подумал, что будет прикольно, если кто-то станет богатым просто так — по фану закинув такой сайт в интернет, как в чёрный ящик. Так что давай, сделай меня миллиардером. Это так абсурдно, что может сработать.",title:"Сделай меня миллиардером",sub:"Каждый платёж приближает меня к девяти нулям. Отправьте любую сумму — это добровольно, и я искренне благодарен.",payTo:"Получатель",amount:"Сумма",goal:"Цель",raised:"Собрано",choose:"Выберите способ оплаты",cards:"Карта, Apple Pay, Google Pay",platforms:"Платёжные платформы",bank:"Банковский перевод",crypto:"Криптовалюта",copy:"Копировать",copied:"Скопировано",soon:"Этот способ ещё не подключён",bank_n:"Банк Оптимизма",lang:"Язык",note:"Платежи — добровольные подарки и не возвращаются. Взамен вы получаете только мою искреннюю благодарность. Это не инвестиция и не благотворительность."},
+uk:{n:"Українська",story:"Я подумав, що буде прикольно, якщо хтось розбагатіє просто так — заради фану закинувши такий сайт в інтернет, як у чорну скриньку. Тож давай, зроби мене мільярдером. Це настільки абсурдно, що може спрацювати.",title:"Зроби мене мільярдером",sub:"Кожен платіж наближає мене до дев’яти нулів. Надішліть будь-яку суму — це добровільно, і я щиро вдячний.",payTo:"Отримувач",amount:"Сума",goal:"Мета",raised:"Зібрано",choose:"Оберіть спосіб оплати",cards:"Картка, Apple Pay, Google Pay",platforms:"Платіжні платформи",bank:"Банківський переказ",crypto:"Криптовалюта",copy:"Копіювати",copied:"Скопійовано",soon:"Цей спосіб ще не підключено",bank_n:"Банк Оптимізму",lang:"Мова",note:"Платежі — добровільні подарунки й не повертаються. Натомість ви отримуєте лише мою щиру вдячність. Це не інвестиція і не благодійність."},
+el:{n:"Ελληνικά",story:"Σκέφτηκα ότι θα ήταν πλάκα αν κάποιος γινόταν πλούσιος έτσι απλά — για την πλάκα, ρίχνοντας ένα τέτοιο site στο ίντερνετ σαν σε μαύρο κουτί. Οπότε έλα, κάνε με δισεκατομμυριούχο. Είναι τόσο παράλογο που μπορεί να πετύχει.",title:"Κάνε με δισεκατομμυριούχο",sub:"Κάθε πληρωμή με φέρνει πιο κοντά στα εννέα μηδενικά. Στείλτε όποιο ποσό θέλετε — είναι προαιρετικό και το εκτιμώ πραγματικά.",payTo:"Πληρωτέο σε",amount:"Ποσό",goal:"Στόχος",raised:"Συγκεντρώθηκαν",choose:"Επιλέξτε τρόπο πληρωμής",cards:"Κάρτα, Apple Pay, Google Pay",platforms:"Πλατφόρμες πληρωμών",bank:"Τραπεζική μεταφορά",crypto:"Κρυπτονομίσματα",copy:"Αντιγραφή",copied:"Αντιγράφηκε",soon:"Αυτός ο τρόπος δεν έχει συνδεθεί ακόμη",bank_n:"Τράπεζα της Αισιοδοξίας",lang:"Γλώσσα",note:"Οι πληρωμές είναι εθελοντικά δώρα και δεν επιστρέφονται. Σε αντάλλαγμα λαμβάνετε μόνο την ειλικρινή μου ευγνωμοσύνη. Δεν πρόκειται για επένδυση ή φιλανθρωπία."},
+es:{n:"Español",story:"Pensé que sería divertido que alguien se hiciera rico así sin más, por diversión, lanzando una web como esta a internet como a una caja negra. Así que venga, hazme multimillonario. Es tan absurdo que podría funcionar.",title:"Hazme multimillonario",sub:"Cada pago me acerca a los nueve ceros. Envía la cantidad que quieras: es voluntario y lo agradezco de verdad.",payTo:"Páguese a la orden de",amount:"Importe",goal:"Meta",raised:"Recaudado",choose:"Elige cómo pagar",cards:"Tarjeta, Apple Pay, Google Pay",platforms:"Plataformas de pago",bank:"Transferencia bancaria",crypto:"Cripto",copy:"Copiar",copied:"Copiado",soon:"Este método aún no está conectado",bank_n:"Banco del Optimismo",lang:"Idioma",note:"Los pagos son regalos voluntarios y no son reembolsables. A cambio solo recibes mi sincero agradecimiento. No es una inversión ni una organización benéfica."},
+de:{n:"Deutsch",story:"Ich dachte, es wäre witzig, wenn jemand einfach so reich wird – aus Spaß, indem er so eine Seite ins Internet wirft wie in eine Blackbox. Also los, mach mich zum Milliardär. Es ist so absurd, dass es funktionieren könnte.",title:"Mach mich zum Milliardär",sub:"Jede Zahlung bringt mich den neun Nullen näher. Schick einen beliebigen Betrag – freiwillig und von Herzen geschätzt.",payTo:"Zahlbar an",amount:"Betrag",goal:"Ziel",raised:"Bisher gesammelt",choose:"Zahlungsart wählen",cards:"Karte, Apple Pay, Google Pay",platforms:"Zahlungsplattformen",bank:"Banküberweisung",crypto:"Krypto",copy:"Kopieren",copied:"Kopiert",soon:"Diese Zahlungsart ist noch nicht verbunden",bank_n:"Bank des Optimismus",lang:"Sprache",note:"Zahlungen sind freiwillige Geschenke und werden nicht erstattet. Du erhältst dafür nur meinen aufrichtigen Dank. Dies ist weder eine Geldanlage noch eine Spende an eine gemeinnützige Organisation."},
+fr:{n:"Français",story:"Je me suis dit que ce serait marrant que quelqu’un devienne riche comme ça, juste pour le fun, en lançant un site pareil sur internet comme dans une boîte noire. Alors vas-y, fais de moi un milliardaire. C’est tellement absurde que ça pourrait marcher.",title:"Fais de moi un milliardaire",sub:"Chaque paiement me rapproche des neuf zéros. Envoie le montant que tu veux : c’est volontaire, et sincèrement apprécié.",payTo:"Payez à l’ordre de",amount:"Montant",goal:"Objectif",raised:"Collecté",choose:"Choisis ton moyen de paiement",cards:"Carte, Apple Pay, Google Pay",platforms:"Plateformes de paiement",bank:"Virement bancaire",crypto:"Crypto",copy:"Copier",copied:"Copié",soon:"Ce moyen n’est pas encore connecté",bank_n:"Banque de l’Optimisme",lang:"Langue",note:"Les paiements sont des dons volontaires et non remboursables. En échange, tu ne reçois que ma sincère gratitude. Ce n’est ni un investissement ni une œuvre caritative."},
+pt:{n:"Português",story:"Pensei que seria engraçado se alguém ficasse rico assim, do nada — só por diversão, jogando um site como este na internet como numa caixa-preta. Então vai, faça de mim um bilionário. É tão absurdo que pode dar certo.",title:"Faça de mim um bilionário",sub:"Cada pagamento me aproxima dos nove zeros. Envie o valor que quiser — é voluntário e sinceramente apreciado.",payTo:"Pague-se à ordem de",amount:"Valor",goal:"Meta",raised:"Arrecadado",choose:"Escolha como pagar",cards:"Cartão, Apple Pay, Google Pay",platforms:"Plataformas de pagamento",bank:"Transferência bancária",crypto:"Cripto",copy:"Copiar",copied:"Copiado",soon:"Este método ainda não está conectado",bank_n:"Banco do Otimismo",lang:"Idioma",note:"Os pagamentos são presentes voluntários e não reembolsáveis. Em troca, você recebe apenas minha sincera gratidão. Não é investimento nem caridade."},
+tr:{n:"Türkçe",story:"Birinin öylece, sırf eğlencesine böyle bir siteyi internete bir kara kutuya atar gibi atarak zengin olması komik olur diye düşündüm. Hadi o zaman, beni milyarder yap. O kadar saçma ki işe yarayabilir.",title:"Beni milyarder yap",sub:"Her ödeme beni dokuz sıfıra biraz daha yaklaştırıyor. İstediğin tutarı gönder — tamamen gönüllü ve içtenlikle teşekkür ederim.",payTo:"Alıcı",amount:"Tutar",goal:"Hedef",raised:"Toplanan",choose:"Ödeme yöntemini seç",cards:"Kart, Apple Pay, Google Pay",platforms:"Ödeme platformları",bank:"Banka havalesi",crypto:"Kripto",copy:"Kopyala",copied:"Kopyalandı",soon:"Bu yöntem henüz bağlanmadı",bank_n:"İyimserlik Bankası",lang:"Dil",note:"Ödemeler gönüllü hediyelerdir ve iade edilmez. Karşılığında yalnızca içten teşekkürümü alırsın. Bu bir yatırım ya da bağış kurumu değildir."},
+ar:{n:"العربية",story:"فكّرت أنه سيكون من الطريف أن يصبح أحدهم ثريًا هكذا ببساطة — للمتعة فقط، بإلقاء موقع كهذا على الإنترنت كأنه صندوق أسود. فهيا، اجعلني مليارديرًا. الفكرة عبثية لدرجة أنها قد تنجح.",title:"اجعلني مليارديرًا",sub:"كل دفعة تقرّبني من الأصفار التسعة. أرسل أي مبلغ تريده — الأمر تطوعي، وأقدّره حقًا.",payTo:"ادفعوا لأمر",amount:"المبلغ",goal:"الهدف",raised:"تم جمعه",choose:"اختر طريقة الدفع",cards:"بطاقة، Apple Pay، Google Pay",platforms:"منصات الدفع",bank:"تحويل بنكي",crypto:"عملات رقمية",copy:"نسخ",copied:"تم النسخ",soon:"هذه الطريقة غير مفعّلة بعد",bank_n:"بنك التفاؤل",lang:"اللغة",note:"المدفوعات هدايا طوعية وغير قابلة للاسترداد. لا تحصل في المقابل إلا على امتناني الصادق. هذا ليس استثمارًا ولا عملًا خيريًا."},
+zh:{n:"中文",story:"我想，如果有人就这样莫名其妙地变富，会很有意思——只是好玩，把这样一个网站像扔进黑匣子一样丢到网上。所以来吧，让我成为亿万富翁。这事荒唐到说不定真能成。",title:"让我成为亿万富翁",sub:"每一笔付款都让我离九个零更近一步。金额随意——完全自愿，衷心感谢。",payTo:"收款人",amount:"金额",goal:"目标",raised:"已筹集",choose:"选择付款方式",cards:"银行卡、Apple Pay、Google Pay",platforms:"支付平台",bank:"银行转账",crypto:"加密货币",copy:"复制",copied:"已复制",soon:"此方式尚未开通",bank_n:"乐观银行",lang:"语言",note:"付款属于自愿赠与，不予退款。您得到的回报只有我真诚的感谢。这不是投资，也不是慈善。"},
+hi:{n:"हिन्दी",story:"मैंने सोचा कि मज़ा आएगा अगर कोई यूँ ही अमीर बन जाए — बस मज़े के लिए, ऐसी वेबसाइट को इंटरनेट पर किसी ब्लैक बॉक्स की तरह डालकर। तो चलो, मुझे अरबपति बनाओ। यह इतना बेतुका है कि शायद काम कर जाए।",title:"मुझे अरबपति बनाओ",sub:"हर भुगतान मुझे नौ शून्यों के और करीब लाता है। जितना चाहें भेजें — यह स्वैच्छिक है और मैं सचमुच आभारी हूँ।",payTo:"प्राप्तकर्ता",amount:"राशि",goal:"लक्ष्य",raised:"अब तक जुटाया",choose:"भुगतान का तरीका चुनें",cards:"कार्ड, Apple Pay, Google Pay",platforms:"भुगतान प्लेटफ़ॉर्म",bank:"बैंक ट्रांसफ़र",crypto:"क्रिप्टो",copy:"कॉपी करें",copied:"कॉपी हो गया",soon:"यह तरीका अभी जुड़ा नहीं है",bank_n:"आशावाद बैंक",lang:"भाषा",note:"भुगतान स्वैच्छिक उपहार हैं और वापस नहीं किए जाते। बदले में आपको केवल मेरा सच्चा आभार मिलता है। यह निवेश या दान संस्था नहीं है।"}
+};
+
+/* region → currency */
+const EUR = "AT BE CY DE EE ES FI FR GR HR IE IT LT LU LV MT NL PT SI SK".split(" ");
+const CUR_BY_REGION = {US:"USD",GB:"GBP",RU:"RUB",UA:"UAH",TR:"TRY",IN:"INR",CN:"CNY",JP:"JPY",BR:"BRL",MX:"MXN",CA:"CAD",AU:"AUD",CH:"CHF",PL:"PLN",SE:"SEK",NO:"NOK",AE:"AED",SA:"SAR",IL:"ILS",KZ:"KZT",GE:"GEL",AM:"AMD"};
+EUR.forEach(r=>CUR_BY_REGION[r]="EUR");
+const LANG_CUR = {ru:"RUB",uk:"UAH",el:"EUR",de:"EUR",fr:"EUR",tr:"TRY",hi:"INR",zh:"CNY",pt:"BRL",es:"EUR",ar:"AED"};
+/* rough multipliers so presets feel natural in each currency */
+const SCALE = {USD:1,EUR:1,GBP:1,CHF:1,CAD:1,AUD:1,RUB:100,UAH:40,TRY:30,INR:80,CNY:7,JPY:150,BRL:5,MXN:20,PLN:4,SEK:10,NOK:10,AED:4,SAR:4,ILS:4,KZT:500,GEL:3,AMD:400};
+
+const $ = id => document.getElementById(id);
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+
+function detect(){
+  const hash = (location.hash||"").slice(1).toLowerCase();
+  if (T[hash]) return hash;
+  const saved = store.get("mmab-lang"); if (saved && T[saved]) return saved;
+  for (const l of (navigator.languages||[navigator.language||"en"])) { const b=l.toLowerCase().split("-")[0]; if (T[b]) return b; }
+  return "en";
+}
+function detectCurrency(lang){
+  for (const l of (navigator.languages||[navigator.language||""])) { const r=(l.split("-")[1]||"").toUpperCase(); if (CUR_BY_REGION[r]) return CUR_BY_REGION[r]; }
+  const tz = (Intl.DateTimeFormat().resolvedOptions().timeZone||"");
+  if (tz==="Asia/Nicosia"||tz.startsWith("Europe/")) return "EUR";
+  return LANG_CUR[lang]||"USD";
+}
+
+let lang = detect(), currency = detectCurrency(lang), amount = 0;
+const presets = () => [5,50,500,5000,1000000].map(v=>v*(SCALE[currency]||1));
+const fmt = (v,cur=currency) => new Intl.NumberFormat(lang,{style:"currency",currency:cur,maximumFractionDigits:0}).format(v);
+const sym = () => (new Intl.NumberFormat(lang,{style:"currency",currency}).formatToParts(0).find(p=>p.type==="currency")||{}).value||currency;
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),1800); }
+
+function render(){
+  const L = T[lang];
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==="ar" ? "rtl" : "ltr";
+  document.title = L.title;
+  document.querySelectorAll("[data-i]").forEach(el=>{ el.textContent = L[el.dataset.i]; });
+  $("bankname").textContent = L.bank_n;
+  $("owner").textContent = CONFIG.owner;
+  $("cur").textContent = sym();
+
+  const chips = $("chips"); chips.innerHTML="";
+  presets().forEach(v=>{
+    const b=document.createElement("button"); b.className="chip"; b.type="button";
+    b.textContent=fmt(v); b.setAttribute("aria-pressed", String(v===amount));
+    b.onclick=()=>{ amount=v; $("amt").value=v; render(); };
+    chips.appendChild(b);
+  });
+
+  $("raised").textContent = fmt(CONFIG.raisedUSD,"USD");
+  $("goal").textContent = fmt(CONFIG.goalUSD,"USD");
+  $("barfill").style.width = Math.min(100, CONFIG.raisedUSD/CONFIG.goalUSD*100)+"%";
+
+  const groups = $("groups"); groups.innerHTML="";
+  ["cards","platforms","bank","crypto"].forEach(g=>{
+    const items = CONFIG.methods.filter(m=>m.group===g && (CONFIG.demo || m.url || m.value));
+    if (!items.length) return;
+    const h=document.createElement("h3"); h.textContent=L[g]; groups.appendChild(h);
+    const grid=document.createElement("div"); grid.className="methods"; groups.appendChild(grid);
+    items.forEach(m=>{
+      const ready = !!(m.url||m.value);
+      if (m.copy){
+        const row=document.createElement("div"); row.className="addr"+(ready?"":" m off");
+        row.innerHTML=`<b></b><code></code><button type="button"></button>`;
+        row.querySelector("b").textContent=m.name;
+        row.querySelector("code").textContent=m.value||"—";
+        const btn=row.querySelector("button"); btn.textContent=L.copy;
+        btn.onclick=async()=>{ if(!ready) return toast(L.soon); try{await navigator.clipboard.writeText(m.value);}catch(e){} toast(L.copied); };
+        grid.appendChild(row);
+      } else {
+        const a=document.createElement("a"); a.className="m"+(ready?"":" off");
+        a.innerHTML=`<span></span><small></small>`;
+        a.querySelector("span").textContent=m.name;
+        if (ready){
+          let href=m.url;
+          if (m.paypalme && amount>0) href=m.url.replace(/\/$/,"")+"/"+amount+currency;
+          a.href=href; a.target="_blank"; a.rel="noopener";
+          a.querySelector("small").textContent = (m.paypalme && amount>0) ? fmt(amount) : "";
+        } else {
+          a.href="#"; a.onclick=e=>{e.preventDefault();toast(L.soon)};
+          a.querySelector("small").textContent="—";
+        }
+        grid.appendChild(a);
+      }
+    });
+  });
+}
+
+/* language select */
+const sel=$("lang");
+Object.keys(T).forEach(k=>{ const o=document.createElement("option"); o.value=k; o.textContent=T[k].n; sel.appendChild(o); });
+sel.value=lang;
+sel.onchange=()=>{ lang=sel.value; store.set("mmab-lang",lang); render(); };
+window.addEventListener("hashchange",()=>{ const h=location.hash.slice(1).toLowerCase(); if(T[h]){lang=h;sel.value=h;render();} });
+
+$("amt").addEventListener("input",e=>{
+  const v=parseFloat(e.target.value.replace(/[^\d.,]/g,"").replace(",","."));
+  amount = isFinite(v)&&v>0 ? Math.round(v*100)/100 : 0;
+  render(); $("amt").focus();
+});
+
+render();
+</script>
+</body>
+</html>
